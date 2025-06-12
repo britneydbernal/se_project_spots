@@ -58,6 +58,11 @@
   opacity: 70%;
   cursor: pointer;
 }
+
+.profile__edit-button:hover {
+  opacity: 100%;
+}
+
 .profile__add-button {
   margin-left: auto;
   margin-top: auto;
@@ -77,6 +82,10 @@
   font-size: 16px;
   line-height: 1;
   color: rgba(252, 245, 229, 1);
+}
+
+.profile__add-button:hover {
+  opacity: 40%;
 }
 
 @media screen and (max-width: 627px) {
