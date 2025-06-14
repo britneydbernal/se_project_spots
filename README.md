@@ -2,7 +2,6 @@
 
 ## Description
 
-TODO - Describe the project and its functionality.
 An interactive social media web application where users can add and remove photos, like photos of other users, and make a few minor adjustments to their profile.
 
 ## Tech Stack
