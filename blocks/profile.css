@@ -8,7 +8,8 @@
   height: 190px;
   width: 190px;
   margin-right: 20px;
-  border-radius: 3%;
+  border-radius: 8px;
+  object-fit: cover;
 }
 
 .profile__column {
@@ -46,6 +47,8 @@
 
 .profile__edit-button {
   margin-top: auto;
+  gap: 8px;
+  padding: 0;
   background: none;
   border: none;
   align-self: flex-start;
@@ -85,7 +88,7 @@
 }
 
 .profile__add-button:hover {
-  opacity: 40%;
+  opacity: 80%;
 }
 
 @media screen and (max-width: 627px) {

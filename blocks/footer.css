@@ -9,3 +9,8 @@
   line-height: 1;
   color: rgba(33, 33, 33, 0.7);
 }
+
+.footer__text {
+  margin: 0;
+  text-align: center;
+}
