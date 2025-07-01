@@ -15,17 +15,17 @@ const newPostButton = document.querySelector(".profile__new-post-button");
 const newPostModal = document.querySelector("#new-post-modal");
 const newPostCloseButton = newPostModal.querySelector(".modal__close-button");
 const newPostForm = newPostModal.querySelector(".modal__form");
-const newPostTitleInput = newPostModal.querySelector("#post-title-input");
+const newPostTitleInput = newPostModal.querySelector("#card-image-input");
 const newPostDescriptionInput = newPostModal.querySelector(
-  "#newpost-description-input"
+  "#card-caption-input"
 );
 
 const profileNameEl = document.querySelector(".profile__name");
 const profileDescriptionEl = document.querySelector(".profile__description");
-const newPostLinkEl = document.querySelector(".profile__new-post-link");
-const newPostDescriptionEl = document.querySelector(
-  "#newpost-description-input"
-);
+
+function closeModal(modal) {
+  modal.classList.remove("modal_is-opened");
+}
 
 editProfileButton.addEventListener("click", function () {
   editProfileNameInput.value = profileNameEl.textContent;
@@ -34,15 +34,7 @@ editProfileButton.addEventListener("click", function () {
 });
 
 editProfileCloseButton.addEventListener("click", function () {
-  editProfileModal.classList.remove("modal_is-opened");
-});
-
-newPostButton.addEventListener("click", function () {
-  newPostModal.classList.add("modal_is-opened");
-});
-
-newPostCloseButton.addEventListener("click", function () {
-  newPostModal.classList.remove("modal_is-opened");
+  closeModal(editProfileModal);
 });
 
 function handleEditProfileSubmit(evt) {
@@ -54,11 +46,19 @@ function handleEditProfileSubmit(evt) {
 
 editProfileForm.addEventListener("submit", handleEditProfileSubmit);
 
+newPostCloseButton.addEventListener("click", function () {
+  newPostModal.classList.remove("modal_is-opened");
+});
+
+newPostCloseButton.addEventListener("click", function () {
+  closeModal(newPostModal);
+});
+
 function handleNewPostSubmit(evt) {
   evt.preventDefault();
   newPostLinkEl.textContent = newPostTitleInput.value;
   newPostDescriptionEl.textContent = newPostDescriptionInput.value;
-  newPostModal.classList.remove("modal_is-opened");
+  closeModal(newPostModal);
 }
 
 newPostForm.addEventListener("submit", handleNewPostSubmit);
