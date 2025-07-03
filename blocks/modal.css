@@ -125,7 +125,7 @@
   }
 
   .modal__form {
-    gap: 16px;
+    gap: 0;
   }
 
   .modal__title {
@@ -142,13 +142,7 @@
   }
 
   .modal__close-button {
-    width: 40px;
-    height: 40px;
-    position: absolute;
     top: 16px;
     right: 16px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
   }
 }

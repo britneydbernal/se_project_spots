@@ -41,7 +41,7 @@ function handleEditProfileSubmit(evt) {
   evt.preventDefault();
   profileNameEl.textContent = editProfileNameInput.value;
   profileDescriptionEl.textContent = editProfileDescriptionInput.value;
-  closeModal(editProfileModal).classList.remove("modal_is-opened");
+  closeModal(editProfileModal);
 }
 
 editProfileForm.addEventListener("submit", handleEditProfileSubmit);
@@ -56,7 +56,7 @@ newPostCloseButton.addEventListener("click", function () {
 function handleNewPostSubmit(evt) {
   evt.preventDefault();
   console.log(newPostTitleInput.value);
-  newPostDescriptionEl.textContent = newPostDescriptionInput.value;
+  console.log(newPostDescriptionInput.value);
   closeModal(newPostModal);
 }
 
