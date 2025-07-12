@@ -1,11 +1,11 @@
 .cards {
-  padding-top: 20px;
-  padding-bottom: 40px;
+  font-family: Poppins, Arial, Helvetica, sans-serif;
+  padding: 20px 0 40px;
   border-bottom: 1px rgba(33, 33, 33, 0.4) solid;
 }
 
 .cards__list {
-  list-style: none;
+  list-style-type: none;
   padding: 0;
   margin: 0;
   display: grid;
