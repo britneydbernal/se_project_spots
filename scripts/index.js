@@ -127,10 +127,6 @@ newPostButton.addEventListener("click", function () {
   openModal(newPostModal);
 });
 
-newPostCloseButton.addEventListener("click", function () {
-  closeModal(newPostModal);
-});
-
 function renderCard(item, method = "prepend") {
   const cardElement = getCardElement(item);
   cardsList[method](cardElement);
@@ -145,7 +141,7 @@ function handleNewPostSubmit(evt) {
   };
 
   renderCard(inputValues);
-  newPostForm.requestFullscreen();
+  newPostForm.reset();
   closeModal(newPostModal);
 }
 
