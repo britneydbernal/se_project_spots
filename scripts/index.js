@@ -44,7 +44,7 @@ const editProfileDescriptionInput = editProfileModal.querySelector(
 
 const newPostButton = document.querySelector(".profile__new-post-button");
 const newPostModal = document.querySelector("#new-post-modal");
-const newPostSubmitButton = newPostModal.querySelector(".modal__button");
+const newPostSubmitButton = newPostModal.querySelector(".modal__submit-button");
 const newPostCloseButton = newPostModal.querySelector(".modal__close-button");
 const newPostForm = newPostModal.querySelector(".modal__form");
 const newPostTitleInput = newPostModal.querySelector("#card-image-input");
@@ -56,7 +56,7 @@ const profileNameEl = document.querySelector(".profile__name");
 const profileDescriptionEl = document.querySelector(".profile__description");
 
 const previewModal = document.querySelector("#preview-modal");
-const previeewModalCloseButton = previewModal.querySelector(
+const previewModalCloseButton = previewModal.querySelector(
   ".modal__close-button"
 );
 const previewImageEl = previewModal.querySelector(".modal__image");
@@ -98,10 +98,30 @@ function getCardElement(data) {
 
 function openModal(modal) {
   modal.classList.add("modal_is-opened");
+
+  function handleEscClose(evt) {
+    if (evt.key === "Escape") {
+      closeModal(modal);
+      document.removeEventListener("keydown", handleEscClose);
+    }
+  }
+
+  function handleOverlayClose(evt) {
+    if (evt.target === modal) {
+      closeModal(modal);
+      document.removeEventListener("click", handleOverlayClose);
+    }
+  }
+
+  modal.addEventListener("click", handleOverlayClose);
+  document.addEventListener("keydown", handleEscClose);
 }
 
 function closeModal(modal) {
   modal.classList.remove("modal_is-opened");
+
+  document.removeEventListener("keydown", modal.handleEscClose);
+  modal.removeEventListener("click", modal.handleOverlayClose);
 }
 
 editProfileButton.addEventListener("click", function () {
