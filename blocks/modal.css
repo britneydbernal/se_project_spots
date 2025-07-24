@@ -155,7 +155,7 @@
 }
 
 .modal__submit-button:disabled {
-  background: rgba(33, 33, 33, 1);
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
