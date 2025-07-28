@@ -120,6 +120,11 @@ function openModal(modal) {
 function closeModal(modal) {
   modal.classList.remove("modal_is-opened");
 
+  const form = modal.querySelector(".modal__form");
+  if (form) {
+    resetFormValidation(form, settings);
+  }
+
   document.removeEventListener("keydown", modal.handleEscClose);
   modal.removeEventListener("click", modal.handleOverlayClose);
 }
