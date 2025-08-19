@@ -1,3 +1,10 @@
+import "./index.css";
+import {
+  enableValidation,
+  validationConfig,
+  resetFormValidation,
+} from "../scripts/validation.js";
+
 const initialCards = [
   {
     name: "Golden Gate Bridge",
@@ -31,9 +38,6 @@ const initialCards = [
 
 const editProfileButton = document.querySelector(".profile__edit-button");
 const editProfileModal = document.querySelector("#edit-profile-modal");
-const editProfileCloseButton = editProfileModal.querySelector(
-  ".modal__close-button"
-);
 const editProfileForm = document.forms["profile-form"];
 const editProfileNameInput = editProfileModal.querySelector(
   "#profile-name-input"
@@ -44,8 +48,6 @@ const editProfileDescriptionInput = editProfileModal.querySelector(
 
 const newPostButton = document.querySelector(".profile__new-post-button");
 const newPostModal = document.querySelector("#new-post-modal");
-const newPostSubmitButton = newPostModal.querySelector(".modal__submit-button");
-const newPostCloseButton = newPostModal.querySelector(".modal__close-button");
 const newPostForm = newPostModal.querySelector(".modal__form");
 const newPostTitleInput = newPostModal.querySelector("#card-image-input");
 const newPostDescriptionInput = newPostModal.querySelector(
@@ -56,9 +58,6 @@ const profileNameEl = document.querySelector(".profile__name");
 const profileDescriptionEl = document.querySelector(".profile__description");
 
 const previewModal = document.querySelector("#preview-modal");
-const previewModalCloseButton = previewModal.querySelector(
-  ".modal__close-button"
-);
 const previewImageEl = previewModal.querySelector(".modal__image");
 const previewCaptionEl = previewModal.querySelector(".modal__caption");
 
@@ -76,15 +75,17 @@ function getCardElement(data) {
   cardImageEl.alt = data.name;
   cardTitleEl.textContent = data.name;
 
-  const cardLikedButtonEl = cardElement.querySelector(".card__like-button");
-  cardLikedButtonEl.addEventListener("click", () => {
-    cardLikedButtonEl.classList.toggle("card__like-button_active");
-  });
+  cardElement
+    .querySelector(".card__like-button")
+    .addEventListener("click", (e) => {
+      e.target.classList.toggle("card__like-button_active");
+    });
 
-  const cardDeleteButtonEl = cardElement.querySelector(".card__delete-button");
-  cardDeleteButtonEl.addEventListener("click", () => {
-    cardElement.remove();
-  });
+  cardElement
+    .querySelector(".card__delete-button")
+    .addEventListener("click", () => {
+      cardElement.remove();
+    });
 
   cardImageEl.addEventListener("click", () => {
     previewImageEl.src = data.link;
@@ -96,25 +97,29 @@ function getCardElement(data) {
   return cardElement;
 }
 
+function renderCard(item, method = "prepend") {
+  const cardElement = getCardElement(item);
+  cardsList[method](cardElement);
+}
+
+initialCards.forEach((item) => renderCard(item, "append"));
+
 function openModal(modal) {
   modal.classList.add("modal_is-opened");
 
   function handleEscClose(evt) {
-    if (evt.key === "Escape") {
-      closeModal(modal);
-      document.removeEventListener("keydown", handleEscClose);
-    }
+    if (evt.key === "Escape") closeModal(modal);
   }
 
   function handleOverlayClose(evt) {
-    if (evt.target === modal) {
-      closeModal(modal);
-      document.removeEventListener("click", handleOverlayClose);
-    }
+    if (evt.target === modal) closeModal(modal);
   }
 
   modal.addEventListener("click", handleOverlayClose);
   document.addEventListener("keydown", handleEscClose);
+
+  modal._escHandler = handleEscClose;
+  modal._overlayHandler = handleOverlayClose;
 }
 
 function closeModal(modal) {
@@ -122,56 +127,46 @@ function closeModal(modal) {
 
   const form = modal.querySelector(".modal__form");
   if (form) {
-    resetFormValidation(form, settings);
+    resetFormValidation(form, validationConfig);
   }
 
-  document.removeEventListener("keydown", modal.handleEscClose);
-  modal.removeEventListener("click", modal.handleOverlayClose);
+  if (modal._escHandler)
+    document.removeEventListener("keydown", modal._escHandler);
+  if (modal._overlayHandler)
+    modal.removeEventListener("click", modal._overlayHandler);
 }
 
-editProfileButton.addEventListener("click", function () {
+document.querySelectorAll(".modal__close-button").forEach((button) => {
+  const popup = button.closest(".modal");
+  button.addEventListener("click", () => closeModal(popup));
+});
+
+editProfileButton.addEventListener("click", () => {
   editProfileNameInput.value = profileNameEl.textContent;
   editProfileDescriptionInput.value = profileDescriptionEl.textContent;
   openModal(editProfileModal);
 });
 
-const closeButtons = document.querySelectorAll(".modal__close-button");
-closeButtons.forEach((button) => {
-  const popup = button.closest(".modal");
-  button.addEventListener("click", () => closeModal(popup));
-});
-
-function handleEditProfileSubmit(evt) {
+editProfileForm.addEventListener("submit", (evt) => {
   evt.preventDefault();
   profileNameEl.textContent = editProfileNameInput.value;
   profileDescriptionEl.textContent = editProfileDescriptionInput.value;
   closeModal(editProfileModal);
-}
-
-editProfileForm.addEventListener("submit", handleEditProfileSubmit);
-newPostButton.addEventListener("click", function () {
-  openModal(newPostModal);
 });
 
-function renderCard(item, method = "prepend") {
-  const cardElement = getCardElement(item);
-  cardsList[method](cardElement);
-}
+newPostButton.addEventListener("click", () => openModal(newPostModal));
 
-function handleNewPostSubmit(evt) {
+newPostForm.addEventListener("submit", (evt) => {
   evt.preventDefault();
 
-  const inputValues = {
+  const newCard = {
     name: newPostDescriptionInput.value,
     link: newPostTitleInput.value,
   };
 
-  renderCard(inputValues);
-  newPostForm.reset();
-  disableButton(newPostSubmitButton, settings);
+  renderCard(newCard);
+  resetFormValidation(newPostForm, validationConfig);
   closeModal(newPostModal);
-}
+});
 
-newPostForm.addEventListener("submit", handleNewPostSubmit);
-
-initialCards.forEach((item) => renderCard(item, "append"));
+enableValidation(validationConfig);
