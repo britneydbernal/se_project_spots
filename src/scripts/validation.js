@@ -94,4 +94,4 @@ export const resetFormValidation = (formElement, config) => {
   toggleButtonState(inputList, buttonElement, config);
 };
 
-export { enableValidation, validationConfig, resetFormValidation };
+//export { enableValidation, validationConfig, resetFormValidation };
