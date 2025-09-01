@@ -2,7 +2,7 @@
   "name": "se_project_spots",
   "version": "0.1.0",
   "description": "An interactive social media web application where users can add and remove photos, like photos of other users, and make a few minor adjustments to their profile.",
-  "homepage": "https://github.com/britneydbernal/se_project_spots#readme",
+  "homepage": "https://britneydbernal.github.io/se_project_spots/",
   "bugs": {
     "url": "https://github.com/britneydbernal/se_project_spots/issues"
   },
@@ -20,6 +20,7 @@
     "clean-webpack-plugin": "4.0.0",
     "css-loader": "6.7.1",
     "cssnano": "5.1.12",
+    "gh-pages": "^6.3.0",
     "html-webpack-plugin": "5.5.0",
     "mini-css-extract-plugin": "2.6.1",
     "postcss-loader": "7.0.1",
@@ -30,6 +31,8 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack --mode production",
-    "dev": "webpack serve --mode development"
+    "dev": "webpack serve --mode development",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   }
 }
