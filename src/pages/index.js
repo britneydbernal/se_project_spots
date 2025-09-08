@@ -3,6 +3,7 @@ import {
   enableValidation,
   validationConfig,
   resetFormValidation,
+  disableButton,
 } from "../scripts/validation.js";
 
 import Api from "../utils/Api.js";
@@ -37,6 +38,38 @@ const initialCards = [
     link: "https://practicum-content.s3.us-west-1.amazonaws.com/software-engineer/spots/6-photo-by-moritz-feldmann-from-pexels.jpg",
   },
 ];
+
+function renderLoading(
+  isLoading,
+  button,
+  buttonText = "Save",
+  loadingText = "Saving..."
+) {
+  if (isLoading) {
+    button.textContent = loadingText;
+  } else {
+    button.textContent = buttonText;
+  }
+}
+
+function handleSubmit(request, evt, loadingText = "Saving...") {
+  evt.preventDefault();
+
+  const submitButton = evt.submitter;
+  const initialText = submitButton.textContent;
+
+  disableButton(submitButton, validationConfig.inactiveButtonClass);
+  renderLoading(true, submitButton, initialText, loadingText);
+
+  request()
+    .then(() => {
+      evt.target.reset();
+    })
+    .catch(console.error)
+    .finally(() => {
+      renderLoading(false, submitButton, initialText);
+    });
+}
 
 const api = new Api({
   baseUrl: "https://around-api.en.tripleten-services.com/v1",
@@ -92,9 +125,12 @@ let selectedCardId;
 api
   .getAppInfo()
   .then(([cards, userInfo]) => {
+    api.userId = userInfo._id;
     cards.forEach((item) => renderCard(item, "append"));
     profileNameEl.textContent = userInfo.name;
     profileDescriptionEl.textContent = userInfo.about;
+    avatarImageEl.src = userInfo.avatar;
+    avatarImageEl.alt = "Profile picture of ${userInfo.name}";
   })
   .catch(console.error);
 
@@ -108,6 +144,10 @@ function getCardElement(data) {
   cardImageEl.src = data.link;
   cardImageEl.alt = data.name;
   cardTitleEl.textContent = data.name;
+
+  if (data.likes.some((user) => user._id === api.userId)) {
+    likeButton.classList.add("card__like-button_active");
+  }
 
   likeButton.addEventListener("click", () => {
     if (likeButton.classList.contains("card__like-button_active")) {
@@ -180,36 +220,28 @@ function closeModal(modal) {
     modal.removeEventListener("click", modal._overlayHandler);
 }
 
-function openDeleteModal(cardElement, cardId) {
+function openDeleteModal() {
   openModal(deleteModal);
-
-  const deleteSubmitButton = deleteForm.querySelector(".modal__submit-button");
-
-  const handleDelete = (evt) => {
-    evt.preventDefault();
-    deleteSubmitButton.textContent = "Deleting...";
-
-    api
-      .deleteCard(cardId)
-      .then(() => {
-        cardElement.remove();
-        closeModal(deleteModal);
-      })
-      .catch(console.error)
-      .finally(() => {
-        deleteSubmitButton.textContent = "Delete";
-        deleteForm.removeEventListener("submit", handleDelete);
-      });
-  };
-
-  deleteForm.addEventListener("submit", handleDelete, { once: true });
-
-  deleteModal
-    .querySelector(".modal__cancel-button")
-    .addEventListener("click", () => {
-      closeModal(deleteModal);
-    });
 }
+
+deleteForm.addEventListener("submit", (evt) => {
+  handleSubmit(
+    () => {
+      return api.deleteCard(selectedCardId).then(() => {
+        selectedCard.remove();
+        closeModal(deleteModal);
+      });
+    },
+    evt,
+    "Deleting..."
+  );
+});
+
+deleteModal
+  .querySelector(".modal__cancel-button")
+  .addEventListener("click", () => {
+    closeModal(deleteModal);
+  });
 
 document.querySelectorAll(".modal__close-button").forEach((button) => {
   const popup = button.closest(".modal");
@@ -223,66 +255,54 @@ editProfileButton.addEventListener("click", () => {
 });
 
 editProfileForm.addEventListener("submit", (evt) => {
-  evt.preventDefault();
-  api
-    .editUserInfo({
-      name: editProfileNameInput.value,
-      about: editProfileDescriptionInput.value,
-    })
-    .then((data) => {
-      profileNameEl.textContent = data.name;
-      profileDescriptionEl.textContent = data.about;
-      closeModal(editProfileModal);
-    })
-    .catch(console.error);
+  handleSubmit(
+    () => {
+      return api
+        .editUserInfo({
+          name: editProfileNameInput.value,
+          about: editProfileDescriptionInput.value,
+        })
+        .then((data) => {
+          profileNameEl.textContent = data.name;
+          profileDescriptionEl.textContent = data.about;
+          closeModal(editProfileModal);
+        });
+    },
+    evt,
+    "Saving..."
+  );
 });
 
-avatarModalButton.addEventListener("click", () => {
-  openModal(avatarModal);
+avatarForm.addEventListener("submit", (evt) => {
+  handleSubmit(
+    () => {
+      return api.editAvatarInfo(avatarInput.value).then((data) => {
+        avatarImageEl.src = data.avatar;
+        avatarImageEl.alt = `Profile picture of ${data.name}`;
+        closeModal(avatarModal);
+      });
+    },
+    evt,
+    "Saving..."
+  );
 });
-
-avatarForm.addEventListener("submit", handleAvatarSubmit);
-function handleAvatarSubmit(evt) {
-  evt.preventDefault();
-  const saveButton = avatarForm.querySelector(".modal__submit-button");
-  saveButton.textContent = "Saving...";
-
-  api
-    .editAvatarInfo(avatarInput.value)
-    .then((data) => {
-      avatarImageEl.src = data.avatar;
-      avatarImageEl.alt = data.name;
-      closeModal(avatarModal);
-    })
-    .catch(console.error)
-    .finally(() => {
-      saveButton.textContent = "Save";
-    });
-}
 
 newPostButton.addEventListener("click", () => openModal(newPostModal));
 newPostForm.addEventListener("submit", (evt) => {
-  evt.preventDefault();
-
-  const saveButton = newPostForm.querySelector(".modal__submit-button");
-  saveButton.textContent = "Saving...";
-
-  const cardData = {
-    name: newPostDescriptionInput.value,
-    link: newPostTitleInput.value,
-  };
-
-  api
-    .addCard(cardData)
-    .then((newCard) => {
-      renderCard(newCard, "prepend");
-      resetFormValidation(newPostForm, validationConfig);
-      closeModal(newPostModal);
-    })
-    .catch(console.error)
-    .finally(() => {
-      saveButton.textContent = "Save";
-    });
+  handleSubmit(
+    () => {
+      const cardData = {
+        name: newPostDescriptionInput.value,
+        link: newPostTitleInput.value,
+      };
+      return api.addCad(cardData).then((newCard) => {
+        renderCard(data, "prepend");
+        closeModal(newPostModal);
+      });
+    },
+    evt,
+    "Saving..."
+  );
 });
 
 enableValidation(validationConfig);
