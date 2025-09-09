@@ -58,7 +58,7 @@ function handleSubmit(request, evt, loadingText = "Saving...") {
   const submitButton = evt.submitter;
   const initialText = submitButton.textContent;
 
-  disableButton(submitButton, validationConfig.inactiveButtonClass);
+  disableButton(submitButton, validationConfig);
   renderLoading(true, submitButton, initialText, loadingText);
 
   request()
@@ -145,7 +145,10 @@ function getCardElement(data) {
   cardImageEl.alt = data.name;
   cardTitleEl.textContent = data.name;
 
-  if (data.likes.some((user) => user._id === api.userId)) {
+  if (
+    Array.isArray(data.likes) &&
+    data.likes.some((user) => user._id === api.userId)
+  ) {
     likeButton.classList.add("card__like-button_active");
   }
 
@@ -295,8 +298,8 @@ newPostForm.addEventListener("submit", (evt) => {
         name: newPostDescriptionInput.value,
         link: newPostTitleInput.value,
       };
-      return api.addCad(cardData).then((newCard) => {
-        renderCard(data, "prepend");
+      return api.addCard(cardData).then((newCard) => {
+        renderCard(newCard, "prepend");
         closeModal(newPostModal);
       });
     },
