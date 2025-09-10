@@ -58,12 +58,12 @@ function handleSubmit(request, evt, loadingText = "Saving...") {
   const submitButton = evt.submitter;
   const initialText = submitButton.textContent;
 
-  disableButton(submitButton, validationConfig);
   renderLoading(true, submitButton, initialText, loadingText);
 
   request()
     .then(() => {
       evt.target.reset();
+      disableButton(submitButton, validationConfig);
     })
     .catch(console.error)
     .finally(() => {
@@ -130,7 +130,7 @@ api
     profileNameEl.textContent = userInfo.name;
     profileDescriptionEl.textContent = userInfo.about;
     avatarImageEl.src = userInfo.avatar;
-    avatarImageEl.alt = "Profile picture of ${userInfo.name}";
+    avatarImageEl.alt = `Profile picture of ${userInfo.name}`;
   })
   .catch(console.error);
 
@@ -157,6 +157,7 @@ function getCardElement(data) {
       api
         .unlikeCard(data._id)
         .then((updatedCard) => {
+          data.likes = updatedCard.likes;
           likeButton.classList.remove("card__like-button_active");
         })
         .catch(console.error);
@@ -164,6 +165,7 @@ function getCardElement(data) {
       api
         .likeCard(data._id)
         .then((updatedCard) => {
+          data.likes = updatedCard.likes;
           likeButton.classList.add("card__like-button_active");
         })
         .catch(console.error);
@@ -274,6 +276,10 @@ editProfileForm.addEventListener("submit", (evt) => {
     evt,
     "Saving..."
   );
+});
+
+avatarModalButton.addEventListener("click", () => {
+  openModal(avatarModal);
 });
 
 avatarForm.addEventListener("submit", (evt) => {
