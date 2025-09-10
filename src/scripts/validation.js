@@ -48,12 +48,12 @@ const toggleButtonState = (inputList, buttonElement, config) => {
   }
 };
 
-const disableButton = (buttonElement, config) => {
+export const disableButton = (buttonElement, config) => {
   buttonElement.classList.add(config.inactiveButtonClass);
   buttonElement.disabled = true;
 };
 
-const enableButton = (buttonElement, config) => {
+export const enableButton = (buttonElement, config) => {
   buttonElement.classList.remove(config.inactiveButtonClass);
   buttonElement.disabled = false;
 };
@@ -93,5 +93,3 @@ export const resetFormValidation = (formElement, config) => {
 
   toggleButtonState(inputList, buttonElement, config);
 };
-
-//export { enableValidation, validationConfig, resetFormValidation };
